@@ -1,4 +1,5 @@
-﻿using SistemaEmpleados.Models;
+﻿using SistemaEmpleados.Generics;
+using SistemaEmpleados.Models;
 using SistemaEmpleados.Servicios;
 
 namespace SistemaEmpleados
@@ -8,280 +9,153 @@ namespace SistemaEmpleados
         static void Main(string[] args)
         {
             Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-            Console.WriteLine("║     SISTEMA DE GESTIÓN DE EMPLEADOS - DÍA 4          ║");
-            Console.WriteLine("║     Refactorización y Buenas Prácticas               ║");
+            Console.WriteLine("║         SEMANA 2 - DÍA 1: GENÉRICOS                   ║");
             Console.WriteLine("╚═══════════════════════════════════════════════════════╝\n");
 
-            // Crear el gestor principal (sealed class que coordina)
-            var gestor = new GestorEmpleados();
+            // ========== PARTE 1: Contenedor Genérico ==========
+            DemostrarContenedorGenerico();
 
-            // Crear empleados de prueba
-            CrearEmpleadosDePrueba(gestor);
+            // ========== PARTE 2: Par Ordenado ==========
+            DemostrarParOrdenado();
 
-            // Menú interactivo
-            bool continuar = true;
-            while (continuar)
-            {
-                MostrarMenu();
-                string opcion = Console.ReadLine();
+            // ========== PARTE 3: Métodos Genéricos ==========
+            DemostrarMetodosGenericos();
 
-                switch (opcion)
-                {
-                    case "1":
-                        gestor.MostrarEstadisticas();
-                        break;
+            // ========== PARTE 4: Colecciones Genéricas ==========
+            Console.WriteLine("\n\n" + new string('=', 60));
+            Console.WriteLine("COLECCIONES GENÉRICAS DE .NET");
+            Console.WriteLine(new string('=', 60));
 
-                    case "2":
-                        gestor.ProcesarNomina();
-                        break;
+            DemostracionColecciones.DemostrarList();
+            DemostracionColecciones.DemostrarDictionary();
+            DemostracionColecciones.DemostrarHashSet();
+            DemostracionColecciones.DemostrarQueue();
+            DemostracionColecciones.DemostrarStack();
+            DemostracionColecciones.DemostrarLinkedList();
+            DemostracionColecciones.DemostrarSortedDictionary();
 
-                    case "3":
-                        gestor.MostrarReportePorTipo();
-                        break;
-
-                    case "4":
-                        gestor.ImprimirReportesIndividuales();
-                        break;
-
-                    case "5":
-                        gestor.GenerarReporteCompleto();
-                        break;
-
-                    case "6":
-                        Console.Write("\nFormato (json/csv/xml): ");
-                        string formato = Console.ReadLine();
-                        gestor.ExportarEmpleados(formato);
-                        break;
-
-                    case "7":
-                        gestor.ValidarTodosLosEmpleados();
-                        break;
-
-                    case "8":
-                        AgregarNuevoEmpleado(gestor);
-                        break;
-
-                    case "9":
-                        BuscarEmpleado(gestor);
-                        break;
-
-                    case "0":
-                        continuar = false;
-                        Console.WriteLine("\n¡Hasta luego!");
-                        break;
-
-                    default:
-                        Console.WriteLine("\n✗ Opción no válida");
-                        break;
-                }
-
-                if (continuar)
-                {
-                    Console.WriteLine("\nPresiona cualquier tecla para continuar...");
-                    Console.ReadKey();
-                    Console.Clear();
-                }
-            }
+            Console.WriteLine("\n\nPresiona cualquier tecla para salir...");
+            Console.ReadKey();
         }
 
-        static void MostrarMenu()
+        static void DemostrarContenedorGenerico()
         {
-            Console.WriteLine("\n╔═══════════════════════════════════════════════════════╗");
-            Console.WriteLine("║                    MENÚ PRINCIPAL                     ║");
-            Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
-            Console.WriteLine("1. Mostrar Estadísticas");
-            Console.WriteLine("2. Procesar Nómina");
-            Console.WriteLine("3. Reporte por Tipo");
-            Console.WriteLine("4. Imprimir Reportes Individuales");
-            Console.WriteLine("5. Generar Reporte Completo (archivo)");
-            Console.WriteLine("6. Exportar Empleados");
-            Console.WriteLine("7. Validar Empleados");
-            Console.WriteLine("8. Agregar Nuevo Empleado");
-            Console.WriteLine("9. Buscar Empleado");
-            Console.WriteLine("0. Salir");
-            Console.Write("\nSeleccione una opción: ");
-        }
+            Console.WriteLine("═══ PARTE 1: Contenedor Genérico ═══\n");
 
-        static void CrearEmpleadosDePrueba(GestorEmpleados gestor)
-        {
-            Console.WriteLine("Cargando empleados de prueba...\n");
+            // Contenedor de enteros
+            var contenedorInt = new Contenedor<int>(42);
+            Console.WriteLine("--- Contenedor<int> ---");
+            contenedorInt.MostrarInformacion();
 
-            // Empleados permanentes
-            gestor.AgregarEmpleado(new EmpleadoPermanente
+            // Contenedor de strings
+            var contenedorString = new Contenedor<string>("Hola Genéricos");
+            Console.WriteLine("\n--- Contenedor<string> ---");
+            contenedorString.MostrarInformacion();
+
+            // Contenedor de empleados
+            var empleado = new EmpleadoPermanente
             {
-                Nombre = "Ana Martínez",
+                Nombre = "Juan Pérez",
                 Id = 1001,
-                SalarioBase = 60000m,
-                FechaIngreso = new DateTime(2020, 1, 15)
-            });
+                SalarioBase = 50000m
+            };
 
-            gestor.AgregarEmpleado(new EmpleadoPermanente
-            {
-                Nombre = "Carlos Ruiz",
-                Id = 1002,
-                SalarioBase = 75000m,
-                FechaIngreso = new DateTime(2018, 6, 10)
-            });
-
-            // Contratistas
-            gestor.AgregarEmpleado(new Contratista
-            {
-                Nombre = "María García",
-                Id = 2001,
-                TarifaPorHora = 350m,
-                HorasTrabajadas = 160,
-                FechaIngreso = new DateTime(2024, 3, 1)
-            });
-
-            gestor.AgregarEmpleado(new Contratista
-            {
-                Nombre = "Luis Hernández",
-                Id = 2002,
-                TarifaPorHora = 280m,
-                HorasTrabajadas = 120,
-                FechaIngreso = new DateTime(2024, 7, 15)
-            });
-
-            // Pasantes
-            gestor.AgregarEmpleado(new Pasante
-            {
-                Nombre = "Sofia López",
-                Id = 3001,
-                EstipendioMensual = 8500m,
-                Universidad = "UNAM",
-                Carrera = "Ingeniería en Computación",
-                FechaIngreso = new DateTime(2024, 9, 1)
-            });
-
-            gestor.AgregarEmpleado(new Pasante
-            {
-                Nombre = "Diego Torres",
-                Id = 3002,
-                EstipendioMensual = 9000m,
-                Universidad = "IPN",
-                Carrera = "Ingeniería en Sistemas",
-                FechaIngreso = new DateTime(2024, 10, 1)
-            });
-
-            Console.WriteLine("\n✓ Empleados cargados exitosamente\n");
+            var contenedorEmpleado = new Contenedor<EmpleadoPermanente>(empleado);
+            Console.WriteLine("\n--- Contenedor<EmpleadoPermanente> ---");
+            contenedorEmpleado.MostrarInformacion();
+            Console.WriteLine($"Empleado almacenado: {contenedorEmpleado.Valor.Nombre}");
         }
 
-        static void AgregarNuevoEmpleado(GestorEmpleados gestor)
+        static void DemostrarParOrdenado()
         {
-            Console.WriteLine("\n=== AGREGAR NUEVO EMPLEADO ===");
-            Console.WriteLine("Tipo de empleado:");
-            Console.WriteLine("1. Permanente");
-            Console.WriteLine("2. Contratista");
-            Console.WriteLine("3. Pasante");
-            Console.Write("Seleccione: ");
+            Console.WriteLine("\n\n═══ PARTE 2: Par Ordenado (Múltiples Tipos) ═══\n");
 
-            string tipo = Console.ReadLine();
+            // Par de int y string
+            var par1 = new ParOrdenado<int, string>(1001, "Ana Martínez");
+            Console.WriteLine($"Par 1: {par1}");
 
-            Console.Write("Nombre: ");
-            string nombre = Console.ReadLine();
+            // Par de string y decimal
+            var par2 = new ParOrdenado<string, decimal>("Salario", 75000.50m);
+            Console.WriteLine($"Par 2: {par2}");
 
-            Console.Write("ID: ");
-            int id = int.Parse(Console.ReadLine());
+            // Intercambiar
+            var par2Intercambiado = par2.Intercambiar();
+            Console.WriteLine($"Par 2 Intercambiado: {par2Intercambiado}");
 
-            switch (tipo)
-            {
-                case "1":
-                    Console.Write("Salario Base: ");
-                    decimal salario = decimal.Parse(Console.ReadLine());
-
-                    gestor.AgregarEmpleado(new EmpleadoPermanente
-                    {
-                        Nombre = nombre,
-                        Id = id,
-                        SalarioBase = salario,
-                        FechaIngreso = DateTime.Now
-                    });
-                    break;
-
-                case "2":
-                    Console.Write("Tarifa por Hora: ");
-                    decimal tarifa = decimal.Parse(Console.ReadLine());
-
-                    Console.Write("Horas Trabajadas: ");
-                    int horas = int.Parse(Console.ReadLine());
-
-                    gestor.AgregarEmpleado(new Contratista
-                    {
-                        Nombre = nombre,
-                        Id = id,
-                        TarifaPorHora = tarifa,
-                        HorasTrabajadas = horas,
-                        FechaIngreso = DateTime.Now
-                    });
-                    break;
-
-                case "3":
-                    Console.Write("Estipendio Mensual: ");
-                    decimal estipendio = decimal.Parse(Console.ReadLine());
-
-                    Console.Write("Universidad: ");
-                    string universidad = Console.ReadLine();
-
-                    gestor.AgregarEmpleado(new Pasante
-                    {
-                        Nombre = nombre,
-                        Id = id,
-                        EstipendioMensual = estipendio,
-                        Universidad = universidad,
-                        FechaIngreso = DateTime.Now
-                    });
-                    break;
-
-                default:
-                    Console.WriteLine("Tipo no válido");
-                    break;
-            }
+            // Par de tipos complejos
+            var empleado1 = new EmpleadoPermanente { Nombre = "Carlos", Id = 1 };
+            var empleado2 = new Contratista { Nombre = "María", Id = 2 };
+            var parEmpleados = new ParOrdenado<EmpleadoPermanente, Contratista>(empleado1, empleado2);
+            Console.WriteLine($"\nPar de empleados: ({parEmpleados.Primero.Nombre}, {parEmpleados.Segundo.Nombre})");
         }
 
-        static void BuscarEmpleado(GestorEmpleados gestor)
+        static void DemostrarMetodosGenericos()
         {
-            Console.WriteLine("\n=== BUSCAR EMPLEADO ===");
-            Console.WriteLine("1. Por ID");
-            Console.WriteLine("2. Por Nombre");
-            Console.Write("Seleccione: ");
+            Console.WriteLine("\n\n═══ PARTE 3: Métodos Genéricos ═══\n");
 
-            string opcion = Console.ReadLine();
+            // Intercambiar valores
+            Console.WriteLine("--- Intercambiar ---");
+            int a = 10, b = 20;
+            Console.WriteLine($"Antes: a={a}, b={b}");
+            UtilidadesGenericas.Intercambiar(ref a, ref b);
+            Console.WriteLine($"Después: a={a}, b={b}");
 
-            if (opcion == "1")
-            {
-                Console.Write("ID: ");
-                int id = int.Parse(Console.ReadLine());
+            string x = "Hola", y = "Mundo";
+            Console.WriteLine($"\nAntes: x={x}, y={y}");
+            UtilidadesGenericas.Intercambiar(ref x, ref y);
+            Console.WriteLine($"Después: x={x}, y={y}");
 
-                var empleado = gestor.BuscarPorID(id);
-                if (empleado != null)
-                {
-                    Console.WriteLine();
-                    empleado.MostrarInformacion();
-                }
-                else
-                {
-                    Console.WriteLine($"\n✗ No se encontró empleado con ID {id}");
-                }
-            }
-            else if (opcion == "2")
-            {
-                Console.Write("Nombre (o parte del nombre): ");
-                string nombre = Console.ReadLine();
+            // Imprimir arrays
+            Console.WriteLine("\n--- Imprimir Arrays ---");
+            int[] numeros = { 1, 2, 3, 4, 5 };
+            string[] palabras = { "Hola", "Mundo", "Genéricos" };
 
-                var empleados = gestor.BuscarPorNombre(nombre);
-                if (empleados.Count > 0)
-                {
-                    Console.WriteLine($"\n✓ Se encontraron {empleados.Count} empleado(s):\n");
-                    foreach (var emp in empleados)
-                    {
-                        Console.WriteLine($"ID: {emp.Id} - {emp.Nombre} ({emp.GetType().Name})");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"\n✗ No se encontraron empleados con '{nombre}'");
-                }
-            }
+            UtilidadesGenericas.ImprimirArray(numeros, "Array de Enteros");
+            UtilidadesGenericas.ImprimirArray(palabras, "Array de Strings");
+
+            // Buscar en array
+            Console.WriteLine("\n--- Buscar Primero ---");
+            int primerPar = UtilidadesGenericas.BuscarPrimero(numeros, n => n % 2 == 0);
+            Console.WriteLine($"Primer número par: {primerPar}");
+
+            string palabraLarga = UtilidadesGenericas.BuscarPrimero(palabras, p => p.Length > 5);
+            Console.WriteLine($"Primera palabra larga: {palabraLarga}");
+
+            // Contar elementos
+            Console.WriteLine("\n--- Contar ---");
+            int cantidadPares = UtilidadesGenericas.Contar(numeros, n => n % 2 == 0);
+            Console.WriteLine($"Cantidad de números pares: {cantidadPares}");
+
+            // Convertir tipos
+            Console.WriteLine("\n--- Convertir ---");
+            string[] numerosComoString = UtilidadesGenericas.Convertir(
+                numeros,
+                n => n.ToString());
+            UtilidadesGenericas.ImprimirArray(numerosComoString, "Números convertidos a String");
+
+            // Información de tipos
+            Console.WriteLine("\n--- Información de Tipos ---");
+            UtilidadesGenericas.MostrarInformacionTipo<int>();
+            UtilidadesGenericas.MostrarInformacionTipo<string>();
+            UtilidadesGenericas.MostrarInformacionTipo<EmpleadoPermanente>();
+
+            // Comparar valores
+            Console.WriteLine("\n--- Comparar Valores ---");
+            bool iguales1 = UtilidadesGenericas.SonIguales(10, 10);
+            bool iguales2 = UtilidadesGenericas.SonIguales("Hola", "Hola");
+            bool iguales3 = UtilidadesGenericas.SonIguales(10, 20);
+
+            Console.WriteLine($"10 == 10: {iguales1}");
+            Console.WriteLine($"\"Hola\" == \"Hola\": {iguales2}");
+            Console.WriteLine($"10 == 20: {iguales3}");
+
+            // Repetir elementos
+            Console.WriteLine("\n--- Repetir ---");
+            var estrellas = UtilidadesGenericas.Repetir("★", 5);
+            Console.WriteLine($"Estrellas: {string.Join(" ", estrellas)}");
+
+            var ceros = UtilidadesGenericas.Repetir(0, 10);
+            Console.WriteLine($"Ceros: [{string.Join(", ", ceros)}]");
         }
     }
 }
